@@ -8,8 +8,6 @@ using System.Collections;
 
 namespace StageRecovery
 {
-
-//    [KSPAddon(KSPAddon.Startup.AllGameScenes, false)]
     [KSPAddon(KSPAddon.Startup.FlightEditorAndKSC, false)]
     public class StageRecovery : MonoBehaviour
     {
@@ -139,6 +137,7 @@ namespace StageRecovery
                     TryWatchVessel(v);
                 }
             }
+
             if (HighLogic.LoadedSceneIsEditor)
             {
                 GameEvents.onEditorShipModified.Add(ShipModifiedEvent);

@@ -22,7 +22,7 @@ namespace StageRecovery
         //The width of the window, for easy changing later if need be
         private static int windowWidth = 300;
         //The main Rect object that the window occupies
-        public Rect mainWindowRect = new Rect((Screen.width - windowWidth)/2, Screen.height / 2, windowWidth, 1);
+        public Rect mainWindowRect = new Rect((Screen.width - windowWidth) / 2, Screen.height / 2, windowWidth, 1);
         public Rect blacklistRect = new Rect(0, 0, 360, 1);
 
 
@@ -37,30 +37,43 @@ namespace StageRecovery
         {
             ApplicationLauncher.AppScenes spaceCenter = 0;
 
-               Log.Info("[SR]  InitializeToolbar");
+            Log.Info("[SR]  InitializeToolbar");
             if (toolbarControl == null)
             {
                 if (!Settings1.Instance.hideSpaceCenterButton)
                     spaceCenter = ApplicationLauncher.AppScenes.SPACECENTER;
+
                 toolbarControl = go.AddComponent<ToolbarControl>();
                 toolbarControl.AddToAllToolbars(
-                    ShowWindow,
-                    hideAll,
+                    null,
+                    null,
                     OnHoverOn,
                     OnHoverOff,
                     null,
                     null,
-                    (
-                    spaceCenter | 
-                    ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.MAPVIEW),
+                    (spaceCenter | ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.SPH |
+                        ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.MAPVIEW),
                     MODID,
                     "stageControlButton",
                     ButtonLoc + "-38",
                     ButtonLoc + "-24",
                     MODNAME
                 );
-
+                toolbarControl.AddLeftRightClickCallbacks(DoLeftClick, DoRightClick);
             }
+        }
+
+        void DoLeftClick()
+        {
+            if (!Settings.Instance.Clicked)
+                ShowWindow();
+            else
+                hideAll();
+        }
+        void DoRightClick()
+        {
+            if (HighLogic.LoadedSceneIsEditor)
+                EditorGUI.Instance.Recalculate();
         }
         internal void DoOnDestroy()
         {
@@ -142,17 +155,6 @@ namespace StageRecovery
             editorGUI.UnHighlightAll();
         }
 
-#if false
-        //Resets the windows. Hides them and resets the Rect object. Not really needed, but it's here
-        public void reset()
-        {
-            hideAll();
-            mainWindowRect = new Rect(0, 0, windowWidth, 1);
-            flightGUI.flightWindowRect = new Rect((Screen.width - 768) / 2, (Screen.height - 540) / 2, 768, 540);
-            editorGUI.EditorGUIRect = new Rect(Screen.width / 3, Screen.height / 3, 200, 1);
-            blacklistRect = new Rect(0, 0, 360, 1);
-        }
-#endif
         private void DrawSettingsGUI(int windowID)
         {
             GUILayout.BeginVertical();
@@ -175,7 +177,7 @@ namespace StageRecovery
             }
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
-          
+
             GUILayout.EndVertical();
             GUI.DragWindow();
         }

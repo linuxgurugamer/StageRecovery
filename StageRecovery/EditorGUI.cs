@@ -79,16 +79,8 @@ namespace StageRecovery
             if (GUILayout.Button(Localizer.Format("#StageRecovery_Recalculate")))//"Recalculate"
             {
                 Recalculate();
-#if false
-                BreakShipIntoStages();
-                if (highLight)
-                {
-                    HighlightAll();
-                }
-
-                EditorGUIRect.height = 1; //reset the height so it is the smallest size it needs to be 
-#endif
             }
+
             GUILayout.EndVertical();
 
             /* if (GUI.Button(new Rect(EditorGUIRect.xMax-10, EditorGUIRect.yMin, 10, 10), "X"))
@@ -148,7 +140,6 @@ namespace StageRecovery
             List<Part> RemainingDecouplers = null; // = new List<Part>() { parts[0] };
 
             for (int i = 0; i < parts.Count; i++)
-            //foreach (var p in parts)
             {
                 Part p = parts[i];
                 if (p.parent == null)
@@ -176,9 +167,12 @@ namespace StageRecovery
                     stageNumber = stageNum++,
                     parts = stage.parts
                 };
+#if DEBUG
                 Log.Info("Parent part: " + parent.partInfo.title);
                 foreach (var d in stage.decouplers)
                     Log.Info("Child decouplers: " + d.partInfo.title);
+#endif
+
                 RemainingDecouplers.AddRange(stage.decouplers);
 
                 //compute properties
@@ -186,6 +180,8 @@ namespace StageRecovery
                 double wetMass = 0;
 
                 stage.parts.ForEach(p => { dryMass += p.mass; wetMass += p.mass + p.GetResourceMass(); });
+
+
                 current.dryMass = dryMass;
                 current.mass = wetMass;
                 current.chuteArea = StageRecovery.GetChuteArea(stage.parts);
