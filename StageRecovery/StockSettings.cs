@@ -67,6 +67,9 @@ namespace StageRecovery
             toolTip = "#StageRecovery_StockSettings_hideSpaceCenterButton_desc")]//The button merely opens a window directing you to these settings pages
         public bool hideSpaceCenterButton = false;
 
+        [GameParameters.CustomParameterUI("#StageRecover_StockSettings_disableRecalcRealchute",
+            toolTip = "#StageRecover_StockSettings_disableRecalcRealchute_desc")]//The button merely opens a window directing you to these settings pages
+        public bool disableRecalcRealchute = false;
 
 
 

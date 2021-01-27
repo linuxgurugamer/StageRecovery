@@ -1,5 +1,10 @@
 Changelog:
 
+1.9.3
+	Added stock settings option to disable automatic recalc if RealChutes is installed
+	Added code to check for RealChutes & stock option regarding recalc.
+	Added Right-Click on toolbar button in editor to do recalculation
+
 1.9.2.2
 	Removed duplicated code in SettingsGUI.cs
 	Thanks to github user @tinygrox for this:

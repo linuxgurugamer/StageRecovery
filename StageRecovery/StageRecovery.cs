@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using KSP.UI.Screens;
-using ToolbarControl_NS;
+using SpaceTuxUtility;
 
 namespace StageRecovery
 {
 
-//    [KSPAddon(KSPAddon.Startup.AllGameScenes, false)]
+    //    [KSPAddon(KSPAddon.Startup.AllGameScenes, false)]
     [KSPAddon(KSPAddon.Startup.FlightEditorAndKSC, false)]
     public class StageRecovery : MonoBehaviour
     {
@@ -66,7 +65,8 @@ namespace StageRecovery
             GameEvents.onVesselGoOnRails.Remove(VesselUnloadEvent);
             GameEvents.OnGameSettingsApplied.Remove(GameSettingsAppliedEvent);
 
-            if (HighLogic.LoadedSceneIsEditor)
+            if (HighLogic.LoadedSceneIsEditor &&
+                (!SpaceTuxUtility.HasMod.hasMod("RealChute") || !Settings1.Instance.disableRecalcRealchute))
             {
                 GameEvents.onEditorShipModified.Remove(ShipModifiedEvent);
             }
@@ -138,10 +138,13 @@ namespace StageRecovery
                     TryWatchVessel(v);
                 }
             }
-            if (HighLogic.LoadedSceneIsEditor)
+
+            if (HighLogic.LoadedSceneIsEditor &&
+                (!SpaceTuxUtility.HasMod.hasMod("RealChute") || !Settings1.Instance.disableRecalcRealchute))
             {
                 GameEvents.onEditorShipModified.Add(ShipModifiedEvent);
             }
+
             //Remove anything that happens in the future
             List<Guid> removeList = new List<Guid>();
             double currentUT = Planetarium.GetUniversalTime();
