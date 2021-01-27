@@ -343,9 +343,9 @@ namespace StageRecovery
             GUILayout.Label(Localizer.Format("#StageRecovery_RecoveryPercent", Math.Round(100*selectedStage.RecoveryPercent, 2)));//"\nPercent refunded: "+  + "%"
             GUILayout.Label(Localizer.Format("#StageRecovery_DistancePercent", Math.Round(100 * selectedStage.DistancePercent, 2)));//"    --Distance: " +  + "%"
             GUILayout.Label(Localizer.Format("#StageRecovery_SpeedPercent", Math.Round(100 * selectedStage.SpeedPercent, 2)));//"    --Speed: " +  + "%"
-            if (Settings3.Instance.GlobalModifier != 1.0F)
+            if (Settings2.Instance.GlobalModifier != 1.0F)
             {
-                GUILayout.Label(Localizer.Format("#StageRecovery_GlobalModifier", Math.Round(100 * Settings3.Instance.GlobalModifier, 2)));//"    --Global: " +  + "%"
+                GUILayout.Label(Localizer.Format("#StageRecovery_GlobalModifier", Math.Round(100 * Settings2.Instance.GlobalModifier, 2)));//"    --Global: " +  + "%"
             }
             GUILayout.Label(Localizer.Format("#StageRecovery_FundsReturned", Math.Round(selectedStage.FundsReturned, 2)));//"Total refunds: " + 
             GUILayout.Label(Localizer.Format("#StageRecovery_FundsOriginal", Math.Round(selectedStage.FundsOriginal, 2)));//"Total value: " + 

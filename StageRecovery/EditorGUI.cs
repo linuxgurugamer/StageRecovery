@@ -139,7 +139,6 @@ namespace StageRecovery
 
         public void BreakShipIntoStages()
         {
-            stages.Clear();
             //loop through the part tree and try to break it into stages
             List<Part> parts = EditorLogic.fetch.ship.parts;
             EditorStatItem current = new EditorStatItem();
@@ -160,9 +159,12 @@ namespace StageRecovery
             }
             if (RemainingDecouplers == null)
             {
+                stages.Clear();
                 Log.Error("No parent part found");
                 return;
             }
+
+            var stageList = new List<EditorStatItem>();
             while (RemainingDecouplers.Count > 0)
             {
                 //determine stages from the decouplers
@@ -188,10 +190,12 @@ namespace StageRecovery
                 current.mass = wetMass;
                 current.chuteArea = StageRecovery.GetChuteArea(stage.parts);
 
-                stages.Add(current);
+                stageList.Add(current);
             }
 
-            ConsolidateStages();
+            ConsolidateStages(ref stageList);
+            stages.Clear(); // wait until we have a full stages collection before we clear it
+            stages.AddRange(stageList);
             Log.Info("[SR] Found " + stages.Count + " stages!");
         }
         PartModule pm = null;
@@ -278,23 +282,19 @@ namespace StageRecovery
             return stage;
         }
 
-        public void ConsolidateStages()
+        public void ConsolidateStages(ref List<EditorStatItem> stageList)
         {
             //finds identical (and adjacent) stages in the list and merges them into a single master stage
             //must find all identical stages first, then merge
 
-            EditorStatItem compareItem = null;
-
-            for (int i = 0; i < stages.Count; i++)
+            for (int i = 0; i < stageList.Count; i++)
             {
-                EditorStatItem stage = stages[i];
-                //  if (compareItem == null)
-                compareItem = stage;
+                var stage = stageList[i];
 
                 int j = i + 1;
-                while (j < stages.Count)
+                while (j < stageList.Count)
                 {
-                    if (stages[j].parts.Count != compareItem.parts.Count || stages[j].mass != compareItem.mass || stages[j].chuteArea != compareItem.chuteArea)
+                    if (stageList[j].parts.Count != stage.parts.Count || stageList[j].mass != stage.mass || stageList[j].chuteArea != stage.chuteArea)
                     {
                         //probably not the same stage setup
                         break;
@@ -310,10 +310,10 @@ namespace StageRecovery
                     for (int k = j - 1; k > i; k--)
                     {
                         //add the parts from k to i
-                        stages[i].parts.AddRange(stages[k].parts);
-                        stages.RemoveAt(k);
+                        stageList[i].parts.AddRange(stageList[k].parts);
+                        stageList.RemoveAt(k);
                     }
-                    stages[i].ForceRecalculate();
+                    stageList[i].ForceRecalculate();
                 }
             }
         }
