@@ -385,7 +385,7 @@ namespace StageRecovery
                 {
                     Log.Info("[SR] Controlled and has engines. TWR: " + (totalThrust / (9.81 * totalMass)));
 
-                    if (totalThrust < (totalMass * 9.81) * Settings3.Instance.MinTWR) //Need greater than 1 TWR to land. Planes would be different, but we ignore them. This isn't quite true with parachutes, btw.
+                    if (totalThrust < (totalMass * 9.81) * Settings2.Instance.MinTWR) //Need greater than 1 TWR to land. Planes would be different, but we ignore them. This isn't quite true with parachutes, btw.
                     {
                         return finalVelocity;
                     }
@@ -553,22 +553,22 @@ namespace StageRecovery
                 //Holder for the chance of burning up in atmosphere (through my non-scientific calculations)
                 float burnChance = 0f;
                 //If DR is installed, the DRMaxVelocity setting is above 0, and the surface speed is above the DRMaxV setting then we calculate the burnChance
-                if (usingOverheat && Settings1.Instance.UseDREVelocity && Settings3.Instance.DeadlyReentryMaxVelocity > 0 && vessel.srfSpeed > Settings3.Instance.DeadlyReentryMaxVelocity)
+                if (usingOverheat && Settings1.Instance.UseDREVelocity && Settings2.Instance.DeadlyReentryMaxVelocity > 0 && vessel.srfSpeed > Settings2.Instance.DeadlyReentryMaxVelocity)
                 {
                     double srfSpeed = vessel.srfSpeed;
                     //Try to reduce our velocity to a safe level
                     if (Settings1.Instance.PoweredRecovery)
                     {
-                        srfSpeed = ReduceSpeed_Engines(srfSpeed, Settings3.Instance.DeadlyReentryMaxVelocity);
+                        srfSpeed = ReduceSpeed_Engines(srfSpeed, Settings2.Instance.DeadlyReentryMaxVelocity);
                         //Vt = srfSpeed;
                     }
 
                     //the burnChance is 2% per 1% that the surface speed is above the DRMaxV
-                    burnChance = (float)(2 * ((srfSpeed / Settings3.Instance.DeadlyReentryMaxVelocity) - 1));
+                    burnChance = (float)(2 * ((srfSpeed / Settings2.Instance.DeadlyReentryMaxVelocity) - 1));
                     //Log a message alerting us to the speed and the burnChance
                     if (burnChance > 0)
                     {
-                        Log.Info("[SR] Overheat velocity exceeded (" + srfSpeed + "/" + Settings3.Instance.DeadlyReentryMaxVelocity + ") Chance of burning up: " + burnChance);
+                        Log.Info("[SR] Overheat velocity exceeded (" + srfSpeed + "/" + Settings2.Instance.DeadlyReentryMaxVelocity + ") Chance of burning up: " + burnChance);
                     }
                 }
 
@@ -704,10 +704,10 @@ namespace StageRecovery
             }
             else
             {
-                DistancePercent = (float)Settings3.Instance.DistanceOverride;
+                DistancePercent = (float)Settings2.Instance.DistanceOverride;
             }
             //Combine the modifier from the velocity and the modifier from distance together
-            RecoveryPercent = (float)SpeedPercent * DistancePercent * (float)Settings3.Instance.GlobalModifier;
+            RecoveryPercent = (float)SpeedPercent * DistancePercent * (float)Settings2.Instance.GlobalModifier;
         }
 
         //This populates the dictionary of Recovered Parts and the dictionary of Costs, along with total funds returns (original, modified, fuel, and dry)
@@ -1013,9 +1013,9 @@ namespace StageRecovery
                 msg.AppendLine(Localizer.Format("#StageRecovery_SuccessMessages_Recoverypercent") +" <color=#8BED8B>" + (100 * RecoveryPercent).ToString("N1") + "%</color>");//Recovery percentage:
                 msg.AppendLine("<color=#8BED8B>" + (100 * DistancePercent).ToString("N1") + "%</color> "+Localizer.Format("#StageRecovery_SuccessMessages_distance"));//distance
                 msg.AppendLine("<color=#8BED8B>" + (100 * SpeedPercent).ToString("N1") + "%</color> "+Localizer.Format("#StageRecovery_SuccessMessages_speed"));//speed
-                if (Settings3.Instance.GlobalModifier != 1.0f)
+                if (Settings2.Instance.GlobalModifier != 1.0f)
                 {
-                    msg.AppendLine("<color=#8BED8B>" + Math.Round(100 * Settings3.Instance.GlobalModifier, 1) + "%</color> "+Localizer.Format("#StageRecovery_SuccessMessages_globalmodifier"));//global modifier
+                    msg.AppendLine("<color=#8BED8B>" + Math.Round(100 * Settings2.Instance.GlobalModifier, 1) + "%</color> "+Localizer.Format("#StageRecovery_SuccessMessages_globalmodifier"));//global modifier
                 }
                 msg.AppendLine("");
                 if (propRemaining.Count > 0)

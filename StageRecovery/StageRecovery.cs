@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using SpaceTuxUtility;
+using KSP.UI.Screens;
+using ToolbarControl_NS;
+using System.Collections;
 
 namespace StageRecovery
 {
-
-    //    [KSPAddon(KSPAddon.Startup.AllGameScenes, false)]
     [KSPAddon(KSPAddon.Startup.FlightEditorAndKSC, false)]
     public class StageRecovery : MonoBehaviour
     {
@@ -15,12 +15,12 @@ namespace StageRecovery
         //Flag that says whether the VesselDestroyEvent has been added, so we don't accidentally add it twice.
         //private bool eventAdded = false;
         private bool sceneChangeComplete = false;
+        private Coroutine recalculateCoroutine;
 
         private List<RecoveryItem> RecoveryQueue = new List<RecoveryItem>(); //Vessels added to this are pre-recovered
         private List<Guid> StageWatchList = new List<Guid>(); //Vessels added to this list are watched for pre-recovery
         private static Dictionary<Guid, double> RecoverAttemptLog = new Dictionary<Guid, double>(); //Vessel guid <-> UT at time of recovery. For checking for duplicates. UT is so we can clear if we revert. 
                                                                                                     //We persist this throughout a whole gaming session just so it isn't wiped out by scene changes
-
 
         private static double cutoffAlt = 23000;
 
@@ -65,8 +65,7 @@ namespace StageRecovery
             GameEvents.onVesselGoOnRails.Remove(VesselUnloadEvent);
             GameEvents.OnGameSettingsApplied.Remove(GameSettingsAppliedEvent);
 
-            if (HighLogic.LoadedSceneIsEditor &&
-                (!SpaceTuxUtility.HasMod.hasMod("RealChute") || !Settings1.Instance.disableRecalcRealchute))
+            if (HighLogic.LoadedSceneIsEditor)
             {
                 GameEvents.onEditorShipModified.Remove(ShipModifiedEvent);
             }
@@ -139,8 +138,7 @@ namespace StageRecovery
                 }
             }
 
-            if (HighLogic.LoadedSceneIsEditor &&
-                (!SpaceTuxUtility.HasMod.hasMod("RealChute") || !Settings1.Instance.disableRecalcRealchute))
+            if (HighLogic.LoadedSceneIsEditor)
             {
                 GameEvents.onEditorShipModified.Add(ShipModifiedEvent);
             }
@@ -173,9 +171,19 @@ namespace StageRecovery
             Log.Info("onVesselTerminated: " + pv.vesselName);
         }
 
+        private IEnumerator DelayedRecalculate()
+        {
+            yield return new WaitForSecondsRealtime(Settings1.Instance.autocalcDelaySec);
+            EditorGUI.Instance.Recalculate();
+            recalculateCoroutine = null;
+        }
+
         public void ShipModifiedEvent(ShipConstruct sc)
         {
-            EditorGUI.Instance.Recalculate();
+            if (recalculateCoroutine != null)
+                StopCoroutine(recalculateCoroutine);
+
+            recalculateCoroutine = StartCoroutine(DelayedRecalculate());
         }
 
         public void GameSceneLoadEvent(GameScenes newScene)

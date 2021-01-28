@@ -70,9 +70,6 @@
     <Reference Include="$(KSPDIR)\KSP_x64_Data\Managed\UnityEngine*.dll">
       <Private>False</Private>
     </Reference>
-    <Reference Include="SpaceTuxUtility">
-      <HintPath>R:\KSP_1.10.1_dev\GameData\SpaceTuxLibrary\Plugins\SpaceTuxUtility.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="ClickThroughBlocker">
       <HintPath>$(KSPDIR)\GameData\000_ClickThroughBlocker\Plugins\ClickThroughBlocker.dll</HintPath>
@@ -98,11 +95,11 @@ IF "%25KSPDIR%25"=="" (
 
 )
 
-start /D $(SolutionDir) /WAIT deploy.bat  $(TargetDir) $(TargetFileName) $(TargetName)
+start /D "$(SolutionDir)" /WAIT deploy.bat "$(TargetDir)" $(TargetFileName) $(TargetName)
 
 if $(ConfigurationName) == Release (	
 
-	start /D $(SolutionDir) /WAIT buildRelease.bat $(TargetDir) $(TargetFileName) $(TargetName)
+	start /D "$(SolutionDir)" /WAIT buildRelease.bat "$(TargetDir)" $(TargetFileName) $(TargetName)
 
 )</PostBuildEvent>
   </PropertyGroup>
