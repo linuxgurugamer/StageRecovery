@@ -56,23 +56,37 @@ namespace StageRecovery
         [GameParameters.CustomParameterUI("#StageRecovery_StockSettings_UseUpgrades")]//Tie Into Upgrades
         public bool UseUpgrades = true;
 
+#if falsae
         [GameParameters.CustomParameterUI("#StageRecovery_StockSettings_hideSpaceCenterButton",//Hide the SpaceCenter button
             toolTip = "#StageRecovery_StockSettings_hideSpaceCenterButton_desc")]//The button merely opens a window directing you to these settings pages
         public bool hideSpaceCenterButton = false;
+#endif
 
         #region AutoCalc delay
 
-        public int autocalcDelayMs = 1000;
+#if false
+        public int autocalcDelayMs = 500;
 
-        [GameParameters.CustomIntParameterUI("#StageRecovery_StockSettings_AutoCalcDelay", minValue = 0, maxValue = 10,
+        [GameParameters.CustomFloatParameterUI("#StageRecovery_StockSettings_AutoCalcDelay", minValue = 0, maxValue = 10,
                  toolTip = "#StageRecovery_StockSettings_AutoCalcDelay_desc")]
         public int autocalcDelaySec
         {
             get { return autocalcDelayMs / 1000; }
             set { autocalcDelayMs = value * 1000; }
         }
+#endif
 
-        #endregion AutoCalc delay
+
+
+        [GameParameters.CustomFloatParameterUI("#StageRecovery_StockSettings_AutoCalcDelay", minValue = 0.0f, maxValue = 10.0f, stepCount = 101, displayFormat ="F1",
+ toolTip = "#StageRecovery_StockSettings_AutoCalcDelay_desc")]
+        public float autocalcDelaySec = 0.5f;
+
+
+
+
+
+#endregion AutoCalc delay
 
         public override bool Interactible(MemberInfo member, GameParameters parameters)
         {
@@ -102,7 +116,7 @@ namespace StageRecovery
         public override int SectionOrder { get { return 2; } }
         public override bool HasPresets { get { return false; } }
 
-        #region RecoveryModifier
+#region RecoveryModifier
 
         public float recoveryModifier = 0.75f;
 
@@ -120,13 +134,13 @@ namespace StageRecovery
             set { recoveryModifier = value; }
         }
 
-        #endregion RecoveryModifier
+#endregion RecoveryModifier
 
         [GameParameters.CustomFloatParameterUI("#StageRecovery_StockSettings_CutoffVelocity", minValue = 2.0f, maxValue = 12.0f, displayFormat = "F1",
          toolTip = "#StageRecovery_StockSettings_CutoffVelocity_desc")]//Flat Rate: Cutoff Velocity""Maximum velocity for recovery
         public double CutoffVelocity = 10f;
 
-        #region HighCut
+#region HighCut
 
         [GameParameters.CustomFloatParameterUI("#StageRecovery_StockSettings_HighCutoffVelocity", minValue = 2.0f, maxValue = 12.0f, displayFormat = "F1",
          toolTip = "#StageRecovery_StockSettings_HighCutoffVelocity_desc")]//Variable Rate: High Cutoff Velocity""Maximum velocity for recovery
@@ -138,13 +152,13 @@ namespace StageRecovery
             set { HighCutField = value; }
         }
 
-        #endregion HighCut
+#endregion HighCut
 
         [GameParameters.CustomFloatParameterUI("#StageRecovery_StockSettings_LowCutoffVelocity", minValue = 2.0f, maxValue = 12.0f, displayFormat = "F1",
          toolTip = "#StageRecovery_StockSettings_LowCutoffVelocity_desc")]//Variable Rate: Low Cutoff Velocity""Maximum velocity for total recovery
         public double LowCut = 6f;
 
-        #region GlobalModifier
+#region GlobalModifier
 
         public float globalModifier = 1.0f;
 
@@ -162,9 +176,9 @@ namespace StageRecovery
             set { globalModifier = value; }
         }
 
-        #endregion GlobalModifier
+#endregion GlobalModifier
 
-        #region DistanceOverride
+#region DistanceOverride
 
         public float distanceOverride = 0.01f;
 
@@ -182,9 +196,9 @@ namespace StageRecovery
             set { distanceOverride = value; }
         }
 
-        #endregion DistanceOverride
+#endregion DistanceOverride
 
-        #region DeadlyReentryMaxVelocity
+#region DeadlyReentryMaxVelocity
 
         public float DeadlyReentryMaxVelocity = 2000f;
 
@@ -196,7 +210,7 @@ namespace StageRecovery
             set { DeadlyReentryMaxVelocity = (float)value; }
         }
 
-        #endregion DeadlyReentryMaxVelocity
+#endregion DeadlyReentryMaxVelocity
 
         [GameParameters.CustomFloatParameterUI("#StageRecovery_StockSettings_PoweredTWR", minValue = 1.0f, maxValue = 12.0f, stepCount = 111, displayFormat = "F1",//Powered TWR
         toolTip = "#StageRecovery_StockSettings_PoweredTWR_desc")]//Minimum TWR needed for a powered recovery

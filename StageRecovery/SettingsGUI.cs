@@ -40,9 +40,10 @@ namespace StageRecovery
             Log.Info("[SR]  InitializeToolbar");
             if (toolbarControl == null)
             {
+#if false
                 if (!Settings1.Instance.hideSpaceCenterButton)
                     spaceCenter = ApplicationLauncher.AppScenes.SPACECENTER;
-
+#endif
                 toolbarControl = go.AddComponent<ToolbarControl>();
                 toolbarControl.AddToAllToolbars(
                     null,
@@ -116,9 +117,11 @@ namespace StageRecovery
                 case GameScenes.EDITOR:
                     EditorCalc();
                     break;
+#if false
                 case GameScenes.SPACECENTER:
                     showWindow = true;
                     break;
+#endif
             }
         }
 

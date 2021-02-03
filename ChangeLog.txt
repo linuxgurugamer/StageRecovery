@@ -1,8 +1,9 @@
 Changelog:
 
 1.9.4
-	Reverted changes made in 1.9.3
-	Added automatic recalculation delay setting instead
+	Reverted the setting to disable automatic recalc if RealChutes is installed
+	Thanks to github user @Captain828 for this:
+		Added automatic recalculation delay setting instead
 
 1.9.3
 	Added stock settings option to disable automatic recalc if RealChutes is installed
