@@ -56,7 +56,7 @@ namespace StageRecovery
         [GameParameters.CustomParameterUI("#StageRecovery_StockSettings_UseUpgrades")]//Tie Into Upgrades
         public bool UseUpgrades = true;
 
-#if falsae
+#if false
         [GameParameters.CustomParameterUI("#StageRecovery_StockSettings_hideSpaceCenterButton",//Hide the SpaceCenter button
             toolTip = "#StageRecovery_StockSettings_hideSpaceCenterButton_desc")]//The button merely opens a window directing you to these settings pages
         public bool hideSpaceCenterButton = false;
