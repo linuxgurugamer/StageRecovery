@@ -37,7 +37,7 @@ namespace StageRecovery
 #if DEBUG
             Log = new Log("StageRecovery", Log.LEVEL.INFO);
 #else
-            Log = new Log("StageRecovery", Log.LEVEL.DEBUG);
+            Log = new Log("StageRecovery", Log.LEVEL.ERROR);
 #endif
             Log.Info("[SR] Awake Start");
             instance = this;
