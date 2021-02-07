@@ -4,6 +4,7 @@ using UnityEngine;
 using ToolbarControl_NS;
 using ClickThroughFix;
 using KSP.Localization;
+using static StageRecovery.StageRecovery;
 
 namespace StageRecovery
 {

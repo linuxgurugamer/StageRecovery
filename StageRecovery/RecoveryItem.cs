@@ -5,6 +5,8 @@ using System.Text;
 using UnityEngine;
 using KSP.UI.Screens;
 using KSP.Localization;
+using static StageRecovery.StageRecovery;
+
 
 namespace StageRecovery
 {

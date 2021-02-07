@@ -4,6 +4,7 @@ using System.Text;
 using System.Reflection;
 using UnityEngine;
 using KSP.Localization;
+using static StageRecovery.StageRecovery;
 
 
 namespace StageRecovery

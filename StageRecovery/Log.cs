@@ -1,9 +1,12 @@
 ﻿using System;
+#if false
 using System.Collections;
 using System.Diagnostics;
 
+
 namespace StageRecovery
 {
+
     public static class Log
     {
         public enum LEVEL
@@ -103,3 +106,5 @@ namespace StageRecovery
 
     }
 }
+
+#endif

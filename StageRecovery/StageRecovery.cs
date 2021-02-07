@@ -5,13 +5,16 @@ using UnityEngine;
 using KSP.UI.Screens;
 using ToolbarControl_NS;
 using System.Collections;
+using KSP_Log;
 
 namespace StageRecovery
 {
-    [KSPAddon(KSPAddon.Startup.FlightEditorAndKSC, false)]
+    [KSPAddon(KSPAddon.Startup.FlightEditorAndKSC, true)]
     public class StageRecovery : MonoBehaviour
     {
         public static StageRecovery instance;
+        internal static Log Log;
+
         //Flag that says whether the VesselDestroyEvent has been added, so we don't accidentally add it twice.
         //private bool eventAdded = false;
         private bool sceneChangeComplete = false;
@@ -31,14 +34,25 @@ namespace StageRecovery
         //Fired when the mod loads each scene
         public void Awake()
         {
+#if DEBUG
+            Log = new Log("StageRecovery", Log.LEVEL.INFO);
+#else
+            Log = new Log("StageRecovery", Log.LEVEL.DEBUG);
+#endif
             Log.Info("[SR] Awake Start");
             instance = this;
-
+            DontDestroyOnLoad(this);
             //If we're in the MainMenu, don't do anything
             if (forbiddenScenes.Contains(HighLogic.LoadedScene))
             {
                 return;
             }
+        }
+
+        public void OnDelete()
+        {
+            StopCoroutine("DelayedRecalculate");
+            recalculateCoroutine = null;
         }
 
         private void OnGUI()
@@ -64,10 +78,16 @@ namespace StageRecovery
             GameEvents.onVesselWillDestroy.Remove(VesselDestroyEvent);
             GameEvents.onVesselGoOnRails.Remove(VesselUnloadEvent);
             GameEvents.OnGameSettingsApplied.Remove(GameSettingsAppliedEvent);
+            GameEvents.onVesselRecovered.Remove(onVesselRecovered);
+            GameEvents.onVesselTerminated.Remove(onVesselTerminated);
 
-            if (HighLogic.LoadedSceneIsEditor)
+            if (recalculateCoroutine != null)
             {
+                if (recalculateCoroutine != null)
+                    StopCoroutine(DelayedRecalculate());
+
                 GameEvents.onEditorShipModified.Remove(ShipModifiedEvent);
+                recalculateCoroutine = null;
             }
         }
 
@@ -83,6 +103,7 @@ namespace StageRecovery
             //If we're in the MainMenu, don't do anything
             if (forbiddenScenes.Contains(HighLogic.LoadedScene))
             {
+                Log.Error("Forbidden scene: " + HighLogic.LoadedScene);
                 return;
             }
             Settings.Instance.gui.InitializeToolbar(this.gameObject);
@@ -176,14 +197,17 @@ namespace StageRecovery
             yield return new WaitForSecondsRealtime(Settings1.Instance.autocalcDelaySec);
             EditorGUI.Instance.Recalculate();
             recalculateCoroutine = null;
+
+            yield return null;
         }
 
         public void ShipModifiedEvent(ShipConstruct sc)
         {
+            Log.Info("ShipModifiedEvent");
             if (recalculateCoroutine != null)
-                StopCoroutine(recalculateCoroutine);
-
+                StopCoroutine(DelayedRecalculate());
             recalculateCoroutine = StartCoroutine(DelayedRecalculate());
+
         }
 
         public void GameSceneLoadEvent(GameScenes newScene)
