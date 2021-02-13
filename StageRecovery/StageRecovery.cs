@@ -9,7 +9,7 @@ using KSP_Log;
 
 namespace StageRecovery
 {
-    [KSPAddon(KSPAddon.Startup.FlightEditorAndKSC, true)]
+    [KSPAddon(KSPAddon.Startup.FlightEditorAndKSC, false)]
     public class StageRecovery : MonoBehaviour
     {
         public static StageRecovery instance;
@@ -41,7 +41,7 @@ namespace StageRecovery
 #endif
             Log.Info("[SR] Awake Start");
             instance = this;
-            DontDestroyOnLoad(this);
+           // DontDestroyOnLoad(this);
             //If we're in the MainMenu, don't do anything
             if (forbiddenScenes.Contains(HighLogic.LoadedScene))
             {
@@ -203,6 +203,8 @@ namespace StageRecovery
 
         public void ShipModifiedEvent(ShipConstruct sc)
         {
+            if ( !sceneChangeComplete)
+                return;
             Log.Info("ShipModifiedEvent");
             if (recalculateCoroutine != null)
                 StopCoroutine(DelayedRecalculate());

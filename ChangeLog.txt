@@ -1,5 +1,9 @@
 Changelog:
 
+1.9.5.1
+	Reverted change to Monobehaviour
+	Fixed the nullref referenced in previous fix by waiting for the scene change to be complete
+
 1.9.5
 	Changed Monobehaviour to be always loaded.  Necessary to fix a nullref in the OnVesselWas Modified in the editor.  Added benefit is a slight decrease in the time to load the various scenes
 	Removed internal KSP_Log, now using KSP_Log from the SpaceTuxLibrary. This makes SpaceTuxLibrary a dependency 
