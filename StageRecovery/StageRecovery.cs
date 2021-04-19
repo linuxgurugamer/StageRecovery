@@ -297,6 +297,8 @@ namespace StageRecovery
 
         void GameSettingsAppliedEvent()
         {
+            if (Settings.Instance == null || Settings.Instance.gui == null)
+                return;
             Settings.Instance.gui.DoOnDestroy();
 
             Settings.Instance.gui.InitializeToolbar(this.gameObject);

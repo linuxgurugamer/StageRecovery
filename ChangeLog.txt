@@ -1,5 +1,8 @@
 Changelog:
 
+1.9.5.2
+	Fixed rare nullref related to settings changes
+
 1.9.5.1
 	Reverted change to Monobehaviour
 	Fixed the nullref referenced in previous fix by waiting for the scene change to be complete
