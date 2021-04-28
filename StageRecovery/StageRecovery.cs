@@ -39,7 +39,7 @@ namespace StageRecovery
 #else
             Log = new Log("StageRecovery", Log.LEVEL.ERROR);
 #endif
-            Log.Info("[SR] Awake Start");
+            Log.Info("Awake Start");
             instance = this;
            // DontDestroyOnLoad(this);
             //If we're in the MainMenu, don't do anything
@@ -214,11 +214,13 @@ namespace StageRecovery
 
         public void GameSceneLoadEvent(GameScenes newScene)
         {
+            Log.Info("GameSceneLoadEvent, newScene: " + newScene);
             sceneChangeComplete = false;
             if (newScene != GameScenes.FLIGHT)
             {
                 clampsRecovered.Clear();
             }
+            Settings.Instance.RecoveredStages.Clear();
         }
 
         private List<Vessel> clampsRecovered = new List<Vessel>();
@@ -300,8 +302,8 @@ namespace StageRecovery
             if (Settings.Instance == null || Settings.Instance.gui == null)
                 return;
             Settings.Instance.gui.DoOnDestroy();
-
-            Settings.Instance.gui.InitializeToolbar(this.gameObject);
+            if (this.gameObject != null)
+                Settings.Instance.gui.InitializeToolbar(this.gameObject);
         }
 
         public void FixedUpdate()

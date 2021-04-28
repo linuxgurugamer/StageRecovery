@@ -43,7 +43,6 @@
     <Compile Include="EditorGUI.cs" />
     <Compile Include="FlightGUI.cs" />
     <Compile Include="InstallChecker.cs" />
-    <Compile Include="Log.cs" />
     <Compile Include="RecoveryControllerWrapper.cs" />
     <Compile Include="RecoveryItem.cs" />
     <Compile Include="RegisterToolbar.cs" />
