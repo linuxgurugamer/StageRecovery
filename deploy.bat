@@ -9,8 +9,6 @@ rem    but not always
 
 set H=%KSPDIR%
 
-set H=r:\KSP_1.11.2
-
 set GAMEDIR=StageRecovery
 set GAMEDATA="GameData"
 set VERSIONFILE=%GAMEDIR%.version

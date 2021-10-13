@@ -1,5 +1,9 @@
 Changelog:
 
+1.9.5.4
+	Added AssemblyFileVersion
+	Updated version file for 1.12
+
 1.9.5.3
 	Fixed recovered stages not being removed when reverting to launch
 
