@@ -80,17 +80,22 @@ namespace StageRecovery
             GameEvents.OnGameSettingsApplied.Remove(GameSettingsAppliedEvent);
             GameEvents.onVesselRecovered.Remove(onVesselRecovered);
             GameEvents.onVesselTerminated.Remove(onVesselTerminated);
+            if (onEditorShipoModifiedInitted)
+            {
+                GameEvents.onEditorShipModified.Remove(ShipModifiedEvent);
+            }
 
             if (recalculateCoroutine != null)
             {
                 if (recalculateCoroutine != null)
                     StopCoroutine(DelayedRecalculate());
 
-                GameEvents.onEditorShipModified.Remove(ShipModifiedEvent);
                 recalculateCoroutine = null;
             }
+
         }
 
+        bool onEditorShipoModifiedInitted = false;
         //Fired when the mod loads each scene
         public void Start()
         {
@@ -162,6 +167,7 @@ namespace StageRecovery
             if (HighLogic.LoadedSceneIsEditor)
             {
                 GameEvents.onEditorShipModified.Add(ShipModifiedEvent);
+                onEditorShipoModifiedInitted = true;
             }
 
             //Remove anything that happens in the future
