@@ -12,6 +12,7 @@ namespace StageRecovery
         void Start()
         {
             ToolbarControl.RegisterMod(SettingsGUI.MODID, SettingsGUI.MODNAME);
+            Settings.Instance.SetRootPath(KSPUtil.ApplicationRootPath);
         }
     }
 }

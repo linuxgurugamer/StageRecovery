@@ -114,7 +114,6 @@ namespace StageRecovery
             if (!vessel.packed)
             {
                 for (int i = 0; i < vessel.Parts.Count; i++)
-                //foreach (Part p in vessel.Parts)
                 {
                     Part p = vessel.Parts[i];
                     p.Pack();
@@ -167,6 +166,7 @@ namespace StageRecovery
                 Math.Round(RecoveryPercent, 3), 
                 Math.Round(FundsReturned, 2)));
 #if DEBUG
+            // foreach has to be used for Dictionaries
             foreach (var r in propRemaining)
             {
                 Log.Info("Remaining " + r.Key + ": " + r.Value.ToString("N1"));
@@ -223,8 +223,10 @@ namespace StageRecovery
         {
             double mass = 0;
             //Loop through the available resources
-            foreach (ProtoPartResourceSnapshot resource in resources)
+            for (int i= 0; i< resources.Count; i++)
             {
+                ProtoPartResourceSnapshot resource = resources[i];
+            
                 //Get the ConfigNode which contains the resource information (amount, name, etc)
                 //                ConfigNode RCN = resource.resourceValues;
                 //Extract the amount information
@@ -277,14 +279,18 @@ namespace StageRecovery
                 }
 
                 //Loop over all the parts to check for control, engines, and fuel
-                foreach (ProtoPartSnapshot p in vessel.protoVessel.protoPartSnapshots)
+                for (int i = 0; i < vessel.protoVessel.protoPartSnapshots.Count; i++)
                 {
+                    ProtoPartSnapshot p = vessel.protoVessel.protoPartSnapshots[i];
+                
                     //Add the mass of the parts and their resources to the total vessel mass
                     totalMass += p.mass;
                     totalMass += GetResourceMass(p.resources);
                     //Search through the modules for engines
-                    foreach (ProtoPartModuleSnapshot ppms in p.modules)
-                    {
+                    for (int i1 = 0; i1 < p.modules.Count; i1++)
+                    { 
+                        ProtoPartModuleSnapshot ppms = p.modules[i1];
+                    
                         //If we find a standard engine, add it to the list if it's enabled and doesn't use solid fuel (no SRBs here, mister!)
                         if (ppms.moduleName == "ModuleEngines")
                         {
@@ -306,8 +312,10 @@ namespace StageRecovery
 
                                 if (propsUsed.Count == 0)
                                 {
-                                    foreach (Propellant prop in engine.propellants)
+                                    for (int i2 = 0;i2 < engine.propellants.Count;i2++)
                                     {
+                                        Propellant prop = engine.propellants[i2];
+                                    
                                         //We don't care about air, electricity, or coolant as it's assumed those are infinite.
                                         if (!(prop.name.ToLower().Contains("air") || prop.name.ToLower().Contains("electric") || prop.name.ToLower().Contains("coolant")))
                                         {
@@ -341,8 +349,10 @@ namespace StageRecovery
 
                                 if (propsUsed.Count == 0)
                                 {
-                                    foreach (Propellant prop in engine.propellants)
+                                    for (int i2 = 0; i2 < engine.propellants.Count; i2++)
                                     {
+                                        Propellant prop = engine.propellants[i2];
+
                                         //We don't care about air, electricity, or coolant as it's assumed those are infinite.
                                         if (!(prop.name.ToLower().Contains("air") || prop.name.ToLower().Contains("electric") || prop.name.ToLower().Contains("coolant")))
                                         {
@@ -357,8 +367,10 @@ namespace StageRecovery
                         }
                     }
                     //Loop through the resources, tracking the number and mass
-                    foreach (ProtoPartResourceSnapshot rsc in p.resources)
+                    for (int i3 = 0; i3 < p.resources.Count; i3++)
                     {
+                        ProtoPartResourceSnapshot rsc = p.resources[i3];
+                    
                         double amt = rsc.amount;
                         if (!resources.ContainsKey(rsc.resourceName))
                         {
@@ -477,10 +489,14 @@ namespace StageRecovery
                         //Delta-V is all about mass differences, so we need to know exactly how much we used
                         double massRemoved = 0;
                         //Loop over the parts and the resources contained, removing what we need
-                        foreach (ProtoPartSnapshot p in vessel.protoVessel.protoPartSnapshots)
+                        for (int i = 0;i < vessel.protoVessel.protoPartSnapshots.Count;i++)
                         {
-                            foreach (ProtoPartResourceSnapshot r in p.resources)
+                            ProtoPartSnapshot p = vessel.protoVessel.protoPartSnapshots[i];
+                        
+                            for (int i1 = 0; i1 < p.resources.Count;i1++)
                             {
+                                ProtoPartResourceSnapshot r = p.resources[i1];
+                            
                                 if (propsUsed.ContainsKey(r.resourceName))
                                 {
                                     double density = PartResourceLibrary.Instance.GetDefinition(r.resourceName).density;
@@ -584,8 +600,10 @@ namespace StageRecovery
                 float totalHeatShield = 0f, maxHeatShield = 0f;
                 if (vessel.protoVessel != null)
                 {
-                    foreach (ProtoPartSnapshot p in vessel.protoVessel.protoPartSnapshots)
+                    for (int i = 0;i < vessel.protoVessel.protoPartSnapshots.Count;i++)
                     {
+                        ProtoPartSnapshot p = vessel.protoVessel.protoPartSnapshots[i];
+                    
                         if (p != null && p.modules != null && p.modules.Exists(mod => mod.moduleName == "ModuleAblator"))
                         {
                             //Grab the heat shield module
@@ -715,8 +733,10 @@ namespace StageRecovery
         //This populates the dictionary of Recovered Parts and the dictionary of Costs, along with total funds returns (original, modified, fuel, and dry)
         private void SetPartsAndFunds()
         {
-            foreach (ProtoPartSnapshot pps in vessel.protoVessel.protoPartSnapshots)
+            for (int i = 0;i < vessel.protoVessel.protoPartSnapshots.Count;i++)
             {
+                ProtoPartSnapshot pps = vessel.protoVessel.protoPartSnapshots[i];
+            
                 //Holders for the "out" below
                 float dryCost, fuelCost;
                 //Stock function for taking a ProtoPartSnapshot and the corresponding AvailablePart (aka, partInfo) and determining the value 
@@ -769,18 +789,25 @@ namespace StageRecovery
             //We'll return the total at the end
             float totalScience = 0;
             //Go through the parts
-            foreach (ProtoPartSnapshot p in vessel.protoVessel.protoPartSnapshots)
+            for (int i = 0;i < vessel.protoVessel.protoPartSnapshots.Count;i++)
             {
+                ProtoPartSnapshot p = vessel.protoVessel.protoPartSnapshots[i];
+            
                 //Go through the modules on each part
-                foreach (ProtoPartModuleSnapshot pm in p.modules)
+                for (int i1 = 0; i1 < p.modules.Count;i1++)
                 {
+                    ProtoPartModuleSnapshot pm = p.modules[i1];
+                
                     ConfigNode node = pm.moduleValues;
                     //Find the ones with the name "ScienceData
                     if (node.HasNode("ScienceData"))
                     {
                         //And loop through them
-                        foreach (ConfigNode subjectNode in node.GetNodes("ScienceData"))
+                        var nodes = node.GetNodes("ScienceData");
+                        for (int j = 0;j < nodes.Length;j++)
                         {
+                            ConfigNode subjectNode = nodes[j];
+                        
                             //Get the ScienceSubject from the subjectID
                             ScienceSubject subject = ResearchAndDevelopment.GetSubjectByID(subjectNode.GetValue("subjectID"));
                             //Get the amount of data saved
@@ -812,6 +839,7 @@ namespace StageRecovery
             else
             {
                 //Recover the kerbals and get their names
+                
                 foreach (ProtoCrewMember pcm in vessel.protoVessel.GetVesselCrew())
                 {
                     kerbals.Add(new CrewWithSeat(pcm));

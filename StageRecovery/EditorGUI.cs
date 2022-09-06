@@ -51,7 +51,6 @@ namespace StageRecovery
 
             //list each stage, with info for each
             for (int i = 0; i < stages.Count; i++)
-            //foreach (EditorStatItem stage in stages)
             {
                 EditorStatItem stage = stages[i];
 
@@ -112,7 +111,6 @@ namespace StageRecovery
         {
             highLight = false;
             for (int i = 0; i < stages.Count; i++)
-            //foreach (EditorStatItem stage in stages)
             {
                 EditorStatItem stage = stages[i];
                 stage.UnHighlight();
@@ -123,7 +121,6 @@ namespace StageRecovery
         {
             highLight = true;
             for (int i = 0; i < stages.Count; i++)
-            //foreach (EditorStatItem stage in stages)
             {
                 EditorStatItem stage = stages[i];
                 stage.Highlight(tanksDry);
@@ -170,8 +167,11 @@ namespace StageRecovery
                 };
 #if DEBUG
                 Log.Info("Parent part: " + parent.partInfo.title);
-                foreach (var d in stage.decouplers)
+                for (int i = 0; i < stage.decouplers.Count; i++)
+                {
+                    var d = stage.decouplers[i];
                     Log.Info("Child decouplers: " + d.partInfo.title);
+                }
 #endif
 
                 RemainingDecouplers.AddRange(stage.decouplers);
@@ -249,7 +249,6 @@ namespace StageRecovery
                 stage.parts.Add(checking);
 
                 for (int i = 0; i < checking.children.Count; i++)
-                //foreach (Part part in checking.children)
                 {
                     Part part = checking.children[i];
 
@@ -431,8 +430,10 @@ namespace StageRecovery
                 stageColor = UnityEngine.Color.green;
             }
             //Part p = parts[0];
-            foreach (Part p in parts)
+            for (int i = 0;i < parts.Count;i++)
             {
+                Part p = parts[i];
+            
                 p.SetHighlight(true, false);
                 p.SetHighlightColor(stageColor);
                 p.SetHighlightType(Part.HighlightType.AlwaysOn);
@@ -442,12 +443,9 @@ namespace StageRecovery
 
         public void UnHighlight()
         {
-            foreach (Part p in parts)
+            for (int i = 0; i < parts.Count;i++)
             {
-                //p.SetHighlightColor(UnityEngine.Color.green);
-                //p.SetHighlight(false, false);
-                //p.SetHighlightType();
-                p.SetHighlightDefault();
+                parts[i].SetHighlightDefault();
             }
             _highlighted = false;
         }

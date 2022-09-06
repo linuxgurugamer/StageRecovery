@@ -27,9 +27,6 @@ namespace StageRecovery
 
         private static double cutoffAlt = 23000;
 
-        //List of scenes where we shouldn't run the mod. I toyed with runOnce, but couldn't get it working
-        private static List<GameScenes> forbiddenScenes = new List<GameScenes> { GameScenes.LOADING, GameScenes.LOADINGBUFFER, GameScenes.CREDITS, GameScenes.MAINMENU, GameScenes.SETTINGS };
-
 
         //Fired when the mod loads each scene
         public void Awake()
@@ -42,11 +39,6 @@ namespace StageRecovery
             Log.Info("Awake Start");
             instance = this;
            // DontDestroyOnLoad(this);
-            //If we're in the MainMenu, don't do anything
-            if (forbiddenScenes.Contains(HighLogic.LoadedScene))
-            {
-                return;
-            }
         }
 
         public void OnDelete()
@@ -57,7 +49,7 @@ namespace StageRecovery
 
         private void OnGUI()
         {
-            if (Settings.Instance != null && Settings.Instance.gui != null)
+            //if (Settings.Instance != null && Settings.Instance.gui != null)
             {
                 Settings.Instance.gui.SetGUIPositions();
             }
@@ -67,9 +59,9 @@ namespace StageRecovery
         public void OnDestroy()
         {
             //If we're in the MainMenu, don't do anything
-            if (forbiddenScenes.Contains(HighLogic.LoadedScene) || Settings.Instance == null || Settings.Instance.gui == null)
+            if ( Settings.Instance == null || Settings.Instance.gui == null)
             {
-                return;
+                    return;
             }
             Settings.Instance.gui.DoOnDestroy();
 
@@ -80,7 +72,7 @@ namespace StageRecovery
             GameEvents.OnGameSettingsApplied.Remove(GameSettingsAppliedEvent);
             GameEvents.onVesselRecovered.Remove(onVesselRecovered);
             GameEvents.onVesselTerminated.Remove(onVesselTerminated);
-            if (onEditorShipoModifiedInitted)
+            if (HighLogic.LoadedSceneIsEditor)
             {
                 GameEvents.onEditorShipModified.Remove(ShipModifiedEvent);
             }
@@ -95,28 +87,17 @@ namespace StageRecovery
 
         }
 
-        bool onEditorShipoModifiedInitted = false;
         //Fired when the mod loads each scene
         public void Start()
         {
             Log.Info("[SR] Start start");
-            if (Settings.Instance != null)
+            //if (Settings.Instance != null)
             {
                 Settings.Instance.gui.hideAll();
             }
 
-            //If we're in the MainMenu, don't do anything
-            if (forbiddenScenes.Contains(HighLogic.LoadedScene))
-            {
-                Log.Error("Forbidden scene: " + HighLogic.LoadedScene);
-                return;
-            }
             Settings.Instance.gui.InitializeToolbar(this.gameObject);
 
-
-            //If the event hasn't been added yet, run this code (adds the event and the stock button)
-            //if (!eventAdded)
-            {
                 GameEvents.onGameSceneLoadRequested.Add(GameSceneLoadEvent);
                 //Add the VesselDestroyEvent to the listeners
                 //GameEvents.onVesselDestroy.Add(VesselDestroyEvent);
@@ -150,7 +131,6 @@ namespace StageRecovery
                 //Load and resave the BlackList. The save ensures that the file will be created if it doesn't exist.
                 Settings.Instance.BlackList.Load();
                 Settings.Instance.BlackList.Save();
-            }
             if (!HighLogic.LoadedSceneIsFlight)
             {
                 Settings.Instance.ClearStageLists();
@@ -167,7 +147,6 @@ namespace StageRecovery
             if (HighLogic.LoadedSceneIsEditor)
             {
                 GameEvents.onEditorShipModified.Add(ShipModifiedEvent);
-                onEditorShipoModifiedInitted = true;
             }
 
             //Remove anything that happens in the future
@@ -266,8 +245,10 @@ namespace StageRecovery
                     clampsRecovered.Add(vessel);
                     float totalRefund = 0;
                     //Loop over all the parts and calculate their cost (we recover at 100% since we're at the launchpad/runway)
-                    foreach (ProtoPartSnapshot pps in pv.protoPartSnapshots)
+                    for (int i = 0; i < pv.protoPartSnapshots.Count; i++)
                     {
+                        ProtoPartSnapshot pps = pv.protoPartSnapshots[i];
+                    
                         float out1, out2;
                         totalRefund += ShipConstruction.GetPartCosts(pps, pps.partInfo, out out1, out out2);
                     }
@@ -319,8 +300,10 @@ namespace StageRecovery
                 return;
             }
             //For each vessel in the watchlist, check to see if it reaches an atm density of 0.01 and if so, pre-recover it
-            foreach (Guid id in new List<Guid>(StageWatchList))
+            for (int i = 0;i < StageWatchList.Count;i++)
             {
+                Guid id = StageWatchList[i];
+            
                 Vessel vessel = FlightGlobals.Vessels.Find(v => v.id == id);
                 if (vessel == null)
                 {
@@ -560,8 +543,10 @@ namespace StageRecovery
             RecoverAttemptLog.Add(v.id, Planetarium.GetUniversalTime());
 
             bool OnlyBlacklistedItems = true;
-            foreach (ProtoPartSnapshot pps in v.protoVessel.protoPartSnapshots)
+            for (int i = 0; i < v.protoVessel.protoPartSnapshots.Count; i++)
             {
+                ProtoPartSnapshot pps = v.protoVessel.protoPartSnapshots[i];
+            
                 if (!Settings.Instance.BlackList.Contains(pps.partInfo.title))
                 {
                     OnlyBlacklistedItems = false;
@@ -631,8 +616,10 @@ namespace StageRecovery
             bool realChuteInUse = false;
             try
             {
-                foreach (ProtoPartSnapshot p in protoParts)
+                for (int i = 0; i < protoParts.Count; i++)
                 {
+                    ProtoPartSnapshot p = protoParts[i];
+                
                     if (p.modules.Exists(ppms => ppms.moduleName == "RealChuteModule"))
                     {
                         if (!realChuteInUse)
@@ -751,12 +738,16 @@ namespace StageRecovery
             bool realChuteInUse = false;
             try
             {
-                foreach (Part p in parts)
+                for (int i = 0; i < parts.Count; i++)
                 {
+                    Part p = parts[i];
+                
                     //Make a list of all the Module Names for easy checking later. This can be avoided, but is convenient.
                     List<string> ModuleNames = new List<string>();
-                    foreach (PartModule pm in p.Modules)
+                    for (int i1 = 0; i1 < p.Modules.Count; i1++)
                     {
+                        PartModule pm = p.Modules[i1];
+                    
                         ModuleNames.Add(pm.moduleName);
                     }
 
@@ -885,8 +876,10 @@ namespace StageRecovery
         {
             double mass = 0;
             //Loop through the available resources
-            foreach (ProtoPartResourceSnapshot resource in resources)
+            for (int i = 0;i < resources.Count; i++)
             {
+                ProtoPartResourceSnapshot resource = resources[i];
+            
                 //Extract the amount information
                 double amount = resource.amount;
                 //Using the name of the resource, find it in the PartResourceLibrary
@@ -915,8 +908,10 @@ namespace StageRecovery
 
             ConfigNode[] parachutes = node.GetNodes("PARACHUTE");
             //We then act on each individual parachute in the module
-            foreach (ConfigNode chute in parachutes)
+            for (int i = 0;i < parachutes.Length;i++)
             {
+                ConfigNode chute = parachutes[i];
+            
                 //First off, the diameter of the parachute. From that we can (later) determine the Vt, assuming a circular chute
                 float diameter = float.Parse(chute.GetValue("deployedDiameter"));
                 //The name of the material the chute is made of. We need this to get the actual material object and then the drag coefficient

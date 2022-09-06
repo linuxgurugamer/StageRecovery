@@ -78,7 +78,6 @@ namespace StageRecovery
                 if (firstToolbarIndex == 0)
                 {
                     for (int i = 0; i < Settings.Instance.RecoveredStages.Count; i++)
-                    //foreach (RecoveryItem stage in Settings.Instance.RecoveredStages)
                     {
                         RecoveryItem stage = Settings.Instance.RecoveredStages[i];
                         string buttonText = stage.StageName;
@@ -113,7 +112,6 @@ namespace StageRecovery
                 else if (firstToolbarIndex == 1)
                 {
                     for (int i = 0; i < Settings.Instance.DestroyedStages.Count; i++)
-                    //foreach (RecoveryItem stage in Settings.Instance.DestroyedStages)
                     {
                         RecoveryItem stage = Settings.Instance.DestroyedStages[i];
                         string buttonText = stage.StageName;
@@ -276,6 +274,7 @@ namespace StageRecovery
             {
                 if (selectedStage.propRemaining.Count > 0)
                 {
+                    // foreach has to be done on Dictionaries
                     foreach (var r in selectedStage.propRemaining)
                     {
                         GUILayout.Label(r.Key + ": " + r.Value.ToString("N1"));
@@ -294,7 +293,6 @@ namespace StageRecovery
             else
             {
                 for (int i = 0; i < selectedStage.KerbalsOnboard.Count; i++)
-                //foreach (CrewWithSeat kerbal in selectedStage.KerbalsOnboard)
                 {
                     CrewWithSeat kerbal = selectedStage.KerbalsOnboard[i];
                     GUILayout.Label(kerbal.CrewMember.name);
@@ -313,7 +311,6 @@ namespace StageRecovery
                 //List all of the experiments recovered (including data amounts and titles)
                 GUILayout.Label(Localizer.Format("#StageRecovery_Experiments"));//"Experiments:"
                 for (int i = 0; i < selectedStage.ScienceExperiments.Count; i++)
-                //foreach (string experiment in selectedStage.ScienceExperiments)
                 {
                     string experiment = selectedStage.ScienceExperiments[i];
                     GUILayout.Label(experiment);

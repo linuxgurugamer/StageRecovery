@@ -1,5 +1,11 @@
 Changelog:
 
+1.9.5.7
+	Removed old code which prevented callbacks from being removed upon return to the main menu
+	More optimizations changing the "foreach" into "for (int i...)"
+	Fixed initialization of the PluginDataPath
+	Removed unnecessary checks for null in OnGUI
+
 1.9.5.6
 	Really fixed the memory leak this time
 

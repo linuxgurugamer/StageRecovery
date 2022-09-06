@@ -187,8 +187,10 @@ namespace StageRecovery
         {
             GUILayout.BeginVertical();
             scrollPos = GUILayout.BeginScrollView(scrollPos, HighLogic.Skin.textArea, GUILayout.Height(Screen.height / 4));
-            foreach (string s in Settings.Instance.BlackList.ignore)
+            for (int i = 0;i < Settings.Instance.BlackList.ignore.Count;i++)
             {
+                string s =Settings.Instance.BlackList.ignore[i];
+            
                 GUILayout.BeginHorizontal();
                 GUILayout.Label(s);
                 if (GUILayout.Button(Localizer.Format("#StageRecovery_Setting_Remove"), GUILayout.ExpandWidth(false)))//"Remove"
