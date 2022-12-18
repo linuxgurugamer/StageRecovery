@@ -244,6 +244,43 @@ namespace StageRecovery
 
         public Dictionary<string, double> propRemaining = new Dictionary<string, double>();
 
+        void DoModuleEnginesRF(ProtoPartSnapshot p, ProtoPartModuleSnapshot ppms, ref bool hasEngines, ref double totalThrust, ref double netISP, ref Dictionary<string, double> propsUsed)
+        {
+            ModuleEnginesRF engine;
+            if (ppms.moduleRef != null)
+            {
+                engine = (ModuleEnginesRF)ppms.moduleRef;
+                engine.Load(ppms.moduleValues);
+            }
+            else
+            {
+                engine = (ModuleEnginesRF)p.partInfo.partPrefab.Modules["ModuleEnginesRF"];
+            }
+            if (engine.isEnabled && engine.propellants.Find(prop => prop.name.ToLower().Contains("solidfuel")) == null)//Don't use SRBs
+            {
+                hasEngines = true;
+                totalThrust += engine.maxThrust;
+                netISP += (engine.maxThrust / engine.atmosphereCurve.Evaluate(1));
+
+                if (propsUsed.Count == 0)
+                {
+                    for (int i2 = 0; i2 < engine.propellants.Count; i2++)
+                    {
+                        Propellant prop = engine.propellants[i2];
+
+                        //We don't care about air, electricity, or coolant as it's assumed those are infinite.
+                        if (!(prop.name.ToLower().Contains("air") || prop.name.ToLower().Contains("electric") || prop.name.ToLower().Contains("coolant")))
+                        {
+                            if (!propsUsed.ContainsKey(prop.name))
+                            {
+                                propsUsed.Add(prop.name, prop.ratio);
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
         /// <summary>
         /// Attempts to use the engines to reduce the speed to the provided target value
         /// </summary>
@@ -370,39 +407,7 @@ namespace StageRecovery
                         //Same with the newer fancy engines (like the one added in 0.23.5)
                         if (ppms.moduleName == "ModuleEnginesRF")
                         {
-                            ModuleEnginesRF engine;
-                            if (ppms.moduleRef != null)
-                            {
-                                engine = (ModuleEnginesRF)ppms.moduleRef;
-                                engine.Load(ppms.moduleValues);
-                            }
-                            else
-                            {
-                                engine = (ModuleEnginesRF)p.partInfo.partPrefab.Modules["ModuleEnginesRF"];
-                            }
-                            if (engine.isEnabled && engine.propellants.Find(prop => prop.name.ToLower().Contains("solidfuel")) == null)//Don't use SRBs
-                            {
-                                hasEngines = true;
-                                totalThrust += engine.maxThrust;
-                                netISP += (engine.maxThrust / engine.atmosphereCurve.Evaluate(1));
-
-                                if (propsUsed.Count == 0)
-                                {
-                                    for (int i2 = 0; i2 < engine.propellants.Count; i2++)
-                                    {
-                                        Propellant prop = engine.propellants[i2];
-
-                                        //We don't care about air, electricity, or coolant as it's assumed those are infinite.
-                                        if (!(prop.name.ToLower().Contains("air") || prop.name.ToLower().Contains("electric") || prop.name.ToLower().Contains("coolant")))
-                                        {
-                                            if (!propsUsed.ContainsKey(prop.name))
-                                            {
-                                                propsUsed.Add(prop.name, prop.ratio);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                            DoModuleEnginesRF(p, ppms, ref hasEngines, ref totalThrust, ref netISP, ref propsUsed);
                         }
 
                     }
