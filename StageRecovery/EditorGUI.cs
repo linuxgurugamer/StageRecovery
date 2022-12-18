@@ -23,6 +23,7 @@ namespace StageRecovery
             Instance = this;
         }
 
+        Vector2 scrollPos;
         public void DrawEditorGUI(int windowID)
         {
             GUILayout.BeginVertical();
@@ -50,6 +51,7 @@ namespace StageRecovery
             }
 
             //list each stage, with info for each
+            scrollPos = GUILayout.BeginScrollView(scrollPos, GUILayout.Height(Screen.height / 3 -60));
             for (int i = 0; i < stages.Count; i++)
             {
                 EditorStatItem stage = stages[i];
@@ -74,7 +76,7 @@ namespace StageRecovery
                 }
                 GUILayout.EndHorizontal();
             }
-
+            GUILayout.EndScrollView();
 
             if (GUILayout.Button(Localizer.Format("#StageRecovery_Recalculate")))//"Recalculate"
             {

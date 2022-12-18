@@ -5,6 +5,7 @@ using System.Text;
 using UnityEngine;
 using KSP.UI.Screens;
 using KSP.Localization;
+using RealFuels;
 using static StageRecovery.StageRecovery;
 
 
@@ -365,6 +366,45 @@ namespace StageRecovery
                                 }
                             }
                         }
+
+                        //Same with the newer fancy engines (like the one added in 0.23.5)
+                        if (ppms.moduleName == "ModuleEnginesRF")
+                        {
+                            ModuleEnginesRF engine;
+                            if (ppms.moduleRef != null)
+                            {
+                                engine = (ModuleEnginesRF)ppms.moduleRef;
+                                engine.Load(ppms.moduleValues);
+                            }
+                            else
+                            {
+                                engine = (ModuleEnginesRF)p.partInfo.partPrefab.Modules["ModuleEnginesRF"];
+                            }
+                            if (engine.isEnabled && engine.propellants.Find(prop => prop.name.ToLower().Contains("solidfuel")) == null)//Don't use SRBs
+                            {
+                                hasEngines = true;
+                                totalThrust += engine.maxThrust;
+                                netISP += (engine.maxThrust / engine.atmosphereCurve.Evaluate(1));
+
+                                if (propsUsed.Count == 0)
+                                {
+                                    for (int i2 = 0; i2 < engine.propellants.Count; i2++)
+                                    {
+                                        Propellant prop = engine.propellants[i2];
+
+                                        //We don't care about air, electricity, or coolant as it's assumed those are infinite.
+                                        if (!(prop.name.ToLower().Contains("air") || prop.name.ToLower().Contains("electric") || prop.name.ToLower().Contains("coolant")))
+                                        {
+                                            if (!propsUsed.ContainsKey(prop.name))
+                                            {
+                                                propsUsed.Add(prop.name, prop.ratio);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                     }
                     //Loop through the resources, tracking the number and mass
                     for (int i3 = 0; i3 < p.resources.Count; i3++)

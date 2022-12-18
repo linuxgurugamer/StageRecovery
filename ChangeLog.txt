@@ -1,5 +1,9 @@
 Changelog:
 
+1.9.6
+	Added RealFuels engine module:  ModuleEnginesRF
+	Added scrolling bar to  part list in editor
+
 1.9.5.7
 	Removed old code which prevented callbacks from being removed upon return to the main menu
 	More optimizations changing the "foreach" into "for (int i...)"

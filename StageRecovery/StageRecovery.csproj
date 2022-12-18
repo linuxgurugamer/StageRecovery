@@ -72,6 +72,12 @@
     <Reference Include="KSP_Log">
       <HintPath>$(KSPDIR)\GameData\SpaceTuxLibrary\Plugins\KSP_Log.dll</HintPath>
     </Reference>
+    <Reference Include="RealFuels">
+      <HintPath>R:\KSP_1.12.3_dev\GameData\RealFuels\Plugins\RealFuels.dll</HintPath>
+    </Reference>
+    <Reference Include="SolverEngines">
+      <HintPath>R:\KSP_1.12.3_dev\GameData\SolverEngines\Plugins\SolverEngines.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="ClickThroughBlocker">
       <HintPath>$(KSPDIR)\GameData\000_ClickThroughBlocker\Plugins\ClickThroughBlocker.dll</HintPath>
