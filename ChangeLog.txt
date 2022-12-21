@@ -1,5 +1,8 @@
 Changelog:
 
+1.9.6.1
+	Fixed another small memory leak
+
 1.9.6
 	Added RealFuels engine module:  ModuleEnginesRF
 	Added scrolling bar to  part list in editor

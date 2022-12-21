@@ -38,7 +38,7 @@ namespace StageRecovery
 #endif
             Log.Info("Awake Start");
             instance = this;
-           // DontDestroyOnLoad(this);
+            // DontDestroyOnLoad(this);
         }
 
         public void OnDelete()
@@ -59,9 +59,9 @@ namespace StageRecovery
         public void OnDestroy()
         {
             //If we're in the MainMenu, don't do anything
-            if ( Settings.Instance == null || Settings.Instance.gui == null)
+            if (Settings.Instance == null || Settings.Instance.gui == null)
             {
-                    return;
+                return;
             }
             Settings.Instance.gui.DoOnDestroy();
 
@@ -72,15 +72,12 @@ namespace StageRecovery
             GameEvents.OnGameSettingsApplied.Remove(GameSettingsAppliedEvent);
             GameEvents.onVesselRecovered.Remove(onVesselRecovered);
             GameEvents.onVesselTerminated.Remove(onVesselTerminated);
-            if (HighLogic.LoadedSceneIsEditor)
-            {
-                GameEvents.onEditorShipModified.Remove(ShipModifiedEvent);
-            }
+            GameEvents.onEditorShipModified.Remove(ShipModifiedEvent);
 
             if (recalculateCoroutine != null)
             {
-                if (recalculateCoroutine != null)
-                    StopCoroutine(DelayedRecalculate());
+                //f (recalculateCoroutine != null)
+                StopCoroutine(DelayedRecalculate());
 
                 recalculateCoroutine = null;
             }
@@ -98,39 +95,39 @@ namespace StageRecovery
 
             Settings.Instance.gui.InitializeToolbar(this.gameObject);
 
-                GameEvents.onGameSceneLoadRequested.Add(GameSceneLoadEvent);
-                //Add the VesselDestroyEvent to the listeners
-                //GameEvents.onVesselDestroy.Add(VesselDestroyEvent);
-                GameEvents.onVesselWillDestroy.Add(VesselDestroyEvent);
+            GameEvents.onGameSceneLoadRequested.Add(GameSceneLoadEvent);
+            //Add the VesselDestroyEvent to the listeners
+            //GameEvents.onVesselDestroy.Add(VesselDestroyEvent);
+            GameEvents.onVesselWillDestroy.Add(VesselDestroyEvent);
 
-                //Add the event that listens for unloads (for removing launch clamps)
-                GameEvents.onVesselGoOnRails.Add(VesselUnloadEvent);
-                //GameEvents..Add(DecoupleEvent);
-
-
-                GameEvents.OnGameSettingsApplied.Add(GameSettingsAppliedEvent);
-
-                GameEvents.onVesselRecovered.Add(onVesselRecovered);
-                GameEvents.onVesselTerminated.Add(onVesselTerminated);
+            //Add the event that listens for unloads (for removing launch clamps)
+            GameEvents.onVesselGoOnRails.Add(VesselUnloadEvent);
+            //GameEvents..Add(DecoupleEvent);
 
 
-                cutoffAlt = ComputeCutoffAlt(Planetarium.fetch.Home) + 1000;
-                Log.Info("[SR] Determined cutoff altitude to be " + cutoffAlt);
+            GameEvents.OnGameSettingsApplied.Add(GameSettingsAppliedEvent);
 
-                //Register with the RecoveryController (do we only do this once?)
-                var s = RecoveryControllerWrapper.RegisterModWithRecoveryController("StageRecovery");
-                Log.Info("[SR] RecoveryController registration success: " + s);
+            GameEvents.onVesselRecovered.Add(onVesselRecovered);
+            GameEvents.onVesselTerminated.Add(onVesselTerminated);
 
-                //Set the eventAdded flag to true so this code doesn't run again
-                //eventAdded = true;
 
-                //Confine the RecoveryModifier to be between 0 and 1
-                Settings2.Instance.RecoveryModifier =
-                    (Settings2.Instance.RecoveryModifier < 0) ? 0 : (Settings2.Instance.RecoveryModifier > 1) ? 1 : Settings2.Instance.RecoveryModifier;
+            cutoffAlt = ComputeCutoffAlt(Planetarium.fetch.Home) + 1000;
+            Log.Info("[SR] Determined cutoff altitude to be " + cutoffAlt);
 
-                //Load and resave the BlackList. The save ensures that the file will be created if it doesn't exist.
-                Settings.Instance.BlackList.Load();
-                Settings.Instance.BlackList.Save();
+            //Register with the RecoveryController (do we only do this once?)
+            var s = RecoveryControllerWrapper.RegisterModWithRecoveryController("StageRecovery");
+            Log.Info("[SR] RecoveryController registration success: " + s);
+
+            //Set the eventAdded flag to true so this code doesn't run again
+            //eventAdded = true;
+
+            //Confine the RecoveryModifier to be between 0 and 1
+            Settings2.Instance.RecoveryModifier =
+                (Settings2.Instance.RecoveryModifier < 0) ? 0 : (Settings2.Instance.RecoveryModifier > 1) ? 1 : Settings2.Instance.RecoveryModifier;
+
+            //Load and resave the BlackList. The save ensures that the file will be created if it doesn't exist.
+            Settings.Instance.BlackList.Load();
+            Settings.Instance.BlackList.Save();
             if (!HighLogic.LoadedSceneIsFlight)
             {
                 Settings.Instance.ClearStageLists();
@@ -188,7 +185,7 @@ namespace StageRecovery
 
         public void ShipModifiedEvent(ShipConstruct sc)
         {
-            if ( !sceneChangeComplete)
+            if (!sceneChangeComplete)
                 return;
             Log.Info("ShipModifiedEvent");
             if (recalculateCoroutine != null)
@@ -248,7 +245,7 @@ namespace StageRecovery
                     for (int i = 0; i < pv.protoPartSnapshots.Count; i++)
                     {
                         ProtoPartSnapshot pps = pv.protoPartSnapshots[i];
-                    
+
                         float out1, out2;
                         totalRefund += ShipConstruction.GetPartCosts(pps, pps.partInfo, out out1, out out2);
                     }
@@ -300,10 +297,10 @@ namespace StageRecovery
                 return;
             }
             //For each vessel in the watchlist, check to see if it reaches an atm density of 0.01 and if so, pre-recover it
-            for (int i = 0;i < StageWatchList.Count;i++)
+            for (int i = 0; i < StageWatchList.Count; i++)
             {
                 Guid id = StageWatchList[i];
-            
+
                 Vessel vessel = FlightGlobals.Vessels.Find(v => v.id == id);
                 if (vessel == null)
                 {
@@ -546,7 +543,7 @@ namespace StageRecovery
             for (int i = 0; i < v.protoVessel.protoPartSnapshots.Count; i++)
             {
                 ProtoPartSnapshot pps = v.protoVessel.protoPartSnapshots[i];
-            
+
                 if (!Settings.Instance.BlackList.Contains(pps.partInfo.title))
                 {
                     OnlyBlacklistedItems = false;
@@ -619,7 +616,7 @@ namespace StageRecovery
                 for (int i = 0; i < protoParts.Count; i++)
                 {
                     ProtoPartSnapshot p = protoParts[i];
-                
+
                     if (p.modules.Exists(ppms => ppms.moduleName == "RealChuteModule"))
                     {
                         if (!realChuteInUse)
@@ -741,13 +738,13 @@ namespace StageRecovery
                 for (int i = 0; i < parts.Count; i++)
                 {
                     Part p = parts[i];
-                
+
                     //Make a list of all the Module Names for easy checking later. This can be avoided, but is convenient.
                     List<string> ModuleNames = new List<string>();
                     for (int i1 = 0; i1 < p.Modules.Count; i1++)
                     {
                         PartModule pm = p.Modules[i1];
-                    
+
                         ModuleNames.Add(pm.moduleName);
                     }
 
@@ -876,10 +873,10 @@ namespace StageRecovery
         {
             double mass = 0;
             //Loop through the available resources
-            for (int i = 0;i < resources.Count; i++)
+            for (int i = 0; i < resources.Count; i++)
             {
                 ProtoPartResourceSnapshot resource = resources[i];
-            
+
                 //Extract the amount information
                 double amount = resource.amount;
                 //Using the name of the resource, find it in the PartResourceLibrary
@@ -908,10 +905,10 @@ namespace StageRecovery
 
             ConfigNode[] parachutes = node.GetNodes("PARACHUTE");
             //We then act on each individual parachute in the module
-            for (int i = 0;i < parachutes.Length;i++)
+            for (int i = 0; i < parachutes.Length; i++)
             {
                 ConfigNode chute = parachutes[i];
-            
+
                 //First off, the diameter of the parachute. From that we can (later) determine the Vt, assuming a circular chute
                 float diameter = float.Parse(chute.GetValue("deployedDiameter"));
                 //The name of the material the chute is made of. We need this to get the actual material object and then the drag coefficient
