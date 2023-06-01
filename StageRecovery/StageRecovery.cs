@@ -49,7 +49,6 @@ namespace StageRecovery
 
         private void OnGUI()
         {
-            //if (Settings.Instance != null && Settings.Instance.gui != null)
             {
                 Settings.Instance.gui.SetGUIPositions();
             }
@@ -185,6 +184,7 @@ namespace StageRecovery
 
         public void ShipModifiedEvent(ShipConstruct sc)
         {
+            if (!Settings1.Instance.SREnabled) { return; }
             if (!sceneChangeComplete)
                 return;
             Log.Info("ShipModifiedEvent");
@@ -196,6 +196,7 @@ namespace StageRecovery
 
         public void GameSceneLoadEvent(GameScenes newScene)
         {
+            if (!Settings1.Instance.SREnabled) { return; }
             Log.Info("GameSceneLoadEvent, newScene: " + newScene);
             sceneChangeComplete = false;
             if (newScene != GameScenes.FLIGHT)
@@ -210,10 +211,7 @@ namespace StageRecovery
         {
             //If we're disabled, just return
 
-            if (!Settings1.Instance.SREnabled)
-            {
-                return;
-            }
+            if (!Settings1.Instance.SREnabled) { return; }
 
             //If the vessel or the protovessel are null then we surely can't do anything with them
             if (vessel == null || vessel.protoVessel == null)
@@ -292,6 +290,8 @@ namespace StageRecovery
 
         public void FixedUpdate()
         {
+            if (!Settings1.Instance.SREnabled) { return; }
+
             if (!sceneChangeComplete)
             {
                 return;
@@ -488,11 +488,7 @@ namespace StageRecovery
         {
             Log.Info("[SR]  VesselDestroyEvent");
             //If we're disabled, just return
-            if (!Settings1.Instance.SREnabled)
-            {
-                Log.Info("[SR]  not enabled");
-                return;
-            }
+            if (!Settings1.Instance.SREnabled) { return; }
 
             if (!sceneChangeComplete)
             {
@@ -536,6 +532,8 @@ namespace StageRecovery
 
         private static void RecoverVessel(Vessel v, bool preRecovery)
         {
+            if (!Settings1.Instance.SREnabled) { return; }
+
             //Indicate that we've at least attempted recovery of this vessel
             RecoverAttemptLog.Add(v.id, Planetarium.GetUniversalTime());
 

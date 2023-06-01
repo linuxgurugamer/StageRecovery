@@ -1,5 +1,9 @@
 Changelog:
 
+1.9.6.3
+	Added more checks for the mod being enabled or not
+	Added notification dialog if button is clicked and mod is disabled
+
 1.9.6.2
 	Updated version file
 

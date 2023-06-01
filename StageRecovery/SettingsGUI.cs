@@ -105,42 +105,52 @@ namespace StageRecovery
         //This shows the correct window depending on the current scene
         public void ShowWindow()
         {
-            Settings.Instance.Clicked = true;
-            switch (HighLogic.LoadedScene)
+            if (Settings1.Instance.SREnabled)
             {
-                case GameScenes.FLIGHT:
-                    flightGUI.showFlightGUI = true;
-                    break;
-                case GameScenes.EDITOR:
-                    EditorCalc();
-                    break;
+                Settings.Instance.Clicked = true;
+                switch (HighLogic.LoadedScene)
+                {
+                    case GameScenes.FLIGHT:
+                        flightGUI.showFlightGUI = true;
+                        break;
+                    case GameScenes.EDITOR:
+                        EditorCalc();
+                        break;
 #if false
                 case GameScenes.SPACECENTER:
                     showWindow = true;
                     break;
 #endif
-            }
+                }
+            } else { showWindow = !showWindow; }
         }
 
         //Does stuff to draw the window.
         public void SetGUIPositions()
         {
-            if (flightGUI.showFlightGUI)
+            if (Settings1.Instance.SREnabled)
             {
-                flightGUI.flightWindowRect = ClickThruBlocker.GUILayoutWindow(8940, flightGUI.flightWindowRect, flightGUI.DrawFlightGUI, "StageRecovery", HighLogic.Skin.window);//
-            }
+                if (flightGUI.showFlightGUI)
+                {
+                    flightGUI.flightWindowRect = ClickThruBlocker.GUILayoutWindow(8940, flightGUI.flightWindowRect, flightGUI.DrawFlightGUI, "StageRecovery", HighLogic.Skin.window);//
+                }
 
-            if (showBlacklist)
+                if (showBlacklist)
+                {
+                    blacklistRect = ClickThruBlocker.GUILayoutWindow(8941, blacklistRect, DrawBlacklistGUI, "Ignore List", HighLogic.Skin.window);//
+                }
+                if (showWindow)
+                {
+                    mainWindowRect = ClickThruBlocker.GUILayoutWindow(8940, mainWindowRect, DrawSettingsGUI, "StageRecovery", HighLogic.Skin.window);//
+                }
+                if (editorGUI.showEditorGUI)
+                {
+                    editorGUI.EditorGUIRect = ClickThruBlocker.GUILayoutWindow(8940, editorGUI.EditorGUIRect, editorGUI.DrawEditorGUI, "StageRecovery", HighLogic.Skin.window);//
+                }
+            } else
             {
-                blacklistRect = ClickThruBlocker.GUILayoutWindow(8941, blacklistRect, DrawBlacklistGUI, "Ignore List", HighLogic.Skin.window);//
-            }
-            if (showWindow)
-            {
-                mainWindowRect = ClickThruBlocker.GUILayoutWindow(8940, mainWindowRect, DrawSettingsGUI, "StageRecovery", HighLogic.Skin.window);//
-            }
-            if (editorGUI.showEditorGUI)
-            {
-                editorGUI.EditorGUIRect = ClickThruBlocker.GUILayoutWindow(8940, editorGUI.EditorGUIRect, editorGUI.DrawEditorGUI, "StageRecovery", HighLogic.Skin.window);//
+                if (showWindow)
+                    mainWindowRect = ClickThruBlocker.GUILayoutWindow(8940, mainWindowRect, DisabledWinGUI, "StageRecovery", HighLogic.Skin.window);//
             }
         }
 
@@ -153,6 +163,29 @@ namespace StageRecovery
             showBlacklist = false;
             Settings.Instance.Clicked = false;
             editorGUI.UnHighlightAll();
+        }
+
+        private void DisabledWinGUI(int winID)
+        {
+            using (new GUILayout.VerticalScope())
+            {
+                using (new GUILayout.HorizontalScope())
+                {
+                    GUILayout.FlexibleSpace();
+                    GUILayout.Label("StageRecovery mod disabled in stock settings page");
+                    GUILayout.FlexibleSpace();
+                }
+                using (new GUILayout.HorizontalScope())
+                {
+                    GUILayout.FlexibleSpace();
+                    if (GUILayout.Button(Localizer.Format("#StageRecovery_Setting_Close"), GUILayout.Width(60)))//"Close"
+                    {
+                        showWindow = false;
+                    }
+                    GUILayout.FlexibleSpace();
+
+                }
+            }
         }
 
         private void DrawSettingsGUI(int windowID)
