@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using KSP.UI.Screens;
-using ToolbarControl_NS;
 using System.Collections;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using KSP_Log;
 
 namespace StageRecovery
@@ -886,20 +886,49 @@ namespace StageRecovery
             return mass;
         }
 
-        private static double ProcessRealchute(ConfigNode node)
-        {
-            double RCParameter = 0;
+        private static bool _realChuteSetupComplete;
 
+        private static Type _realChuteMatLibrary;
+
+        private static MethodInfo _realChuteGetMaterialMethod;
+
+        private static object _realChuteMaterialInstance;
+
+        private static void SetupRealChuteReflection()
+        {
             //This is where the Reflection starts. We need to access the material library that RealChute has, so we first grab it's Type
-            Type matLibraryType = null;
             AssemblyLoader.loadedAssemblies.TypeOperation(t =>
             {
                 if (t.FullName == "RealChute.Libraries.MaterialsLibrary.MaterialsLibrary")
                 {
-                    matLibraryType = t;
+                    _realChuteMatLibrary = t;
                 }
             });
 
+            //This grabs the method that RealChute uses to get the material. We will invoke that with the name of the material from before.
+            _realChuteGetMaterialMethod = _realChuteMatLibrary.GetMethod("GetMaterial", new[] { typeof(string) });
+            //In order to invoke the method, we need to grab the active instance of the material library
+            _realChuteMaterialInstance = _realChuteMatLibrary.GetProperty("Instance")?.GetValue(null, null);
+            _realChuteSetupComplete = true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static float GetDragCoefficient(string material)
+        {
+            //With the library instance we can invoke the GetMaterial method (passing the name of the material as a parameter) to receive an object that is the material
+            object materialObject = _realChuteGetMaterialMethod.Invoke(_realChuteMaterialInstance, new object[] { material });
+            //With that material object we can extract the dragCoefficient using the helper function above.
+            return Convert.ToSingle(GetMemberInfoValue(materialObject.GetType().GetMember("DragCoefficient")[0], materialObject));
+        }
+
+        private static double ProcessRealchute(ConfigNode node)
+        {
+            double RCParameter = 0;
+
+            if (!_realChuteSetupComplete)
+            {
+                SetupRealChuteReflection();
+            }
 
             ConfigNode[] parachutes = node.GetNodes("PARACHUTE");
             //We then act on each individual parachute in the module
@@ -912,20 +941,13 @@ namespace StageRecovery
                 //The name of the material the chute is made of. We need this to get the actual material object and then the drag coefficient
                 string mat = chute.GetValue("material");
 
-                //This grabs the method that RealChute uses to get the material. We will invoke that with the name of the material from before.
-                System.Reflection.MethodInfo matMethod = matLibraryType.GetMethod("GetMaterial", new Type[] { typeof(string) });
-                //In order to invoke the method, we need to grab the active instance of the material library
-                object MatLibraryInstance = matLibraryType.GetProperty("Instance").GetValue(null, null);
+                float dragC = GetDragCoefficient(mat);
 
-                //With the library instance we can invoke the GetMaterial method (passing the name of the material as a parameter) to receive an object that is the material
-                object materialObject = matMethod.Invoke(MatLibraryInstance, new object[] { mat });
-                //With that material object we can extract the dragCoefficient using the helper function above.
-                float dragC = Convert.ToSingle(GetMemberInfoValue(materialObject.GetType().GetMember("DragCoefficient")[0], materialObject));
                 //Now we calculate the RCParameter. Simple addition of this doesn't result in perfect results for Vt with parachutes with different diameter or drag coefficients
                 //But it works perfectly for multiple identical parachutes (the normal case)
                 RCParameter += (dragC * Mathf.Pow(diameter, 2) * Math.PI / 4.0);
-
             }
+
             return RCParameter;
         }
 
