@@ -1,5 +1,9 @@
 Changelog:
 
+1.9.7 
+	Thanks to github user @TuckMeIntoBread for this:
+		Optimize Reflection Usage in ProcessRealchute Method.  This pull request introduces optimizations to the ProcessRealchute method, significantly improving performance and all but eliminating VAB hiccup/lags related to StageRecovery + RealChute being used in combination.
+
 1.9.6.3
 	Added more checks for the mod being enabled or not
 	Added notification dialog if button is clicked and mod is disabled
