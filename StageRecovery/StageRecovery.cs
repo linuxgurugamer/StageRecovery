@@ -433,6 +433,42 @@ namespace StageRecovery
             return newVal;
         }
 
+        private static Assembly GetFMRSAssembly()
+        {
+            foreach (var loadedAssembly in AssemblyLoader.loadedAssemblies)
+            {
+                if (loadedAssembly.name != "FMRS (Flight Manager For Reusable Stages)")
+                    continue;
+
+                return loadedAssembly.assembly;
+            }
+
+            return null;
+        }
+
+        private static Type GetFMRSType()
+        {
+            try
+            {
+                var assembly = GetFMRSAssembly();
+                if (assembly == null)
+                    return null;
+
+                return assembly.GetType("FMRS.FMRS_Util");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
+                return null;
+            }
+        }
+
+        static readonly Type FMRSType = GetFMRSType();
+        static readonly MemberInfo FMRSSettingEnabled = FMRSType?.GetMember("_SETTING_Enabled")?.FirstOrDefault();
+        static readonly MemberInfo FMRSSettingArmed = FMRSType?.GetMember("_SETTING_Armed")?.FirstOrDefault();
+        static readonly MemberInfo FMRSSettingParachutes = FMRSType?.GetMember("_SETTING_Parachutes")?.FirstOrDefault();
+        static readonly MemberInfo FMRSSettingDeferParachutesToStageRecovery = FMRSType?.GetMember("_SETTING_Defer_Parachutes_to_StageRecovery")?.FirstOrDefault();
+
         /// <summary>
         /// Check to see if FMRS is installed and enabled
         /// </summary>
@@ -441,35 +477,23 @@ namespace StageRecovery
 
         public static bool FMRS_Enabled(bool parachuteSetting = true)
         {
+            if (FMRSType == null)
+                return false;
+
             try
             {
-                Type FMRSType = null;
-                AssemblyLoader.loadedAssemblies.TypeOperation(t =>
-                {
-                    if (t.FullName == "FMRS.FMRS_Util")
-                    {
-                        FMRSType = t;
-                    }
-                });
-                if (FMRSType == null)
-                {
-                    return false;
-                }
-
-                UnityEngine.Object FMRSUtilClass = GameObject.FindObjectOfType(FMRSType);
-                bool enabled = (bool)GetMemberInfoValue(FMRSType.GetMember("_SETTING_Enabled")[0], FMRSUtilClass);
+                UnityEngine.Object FMRSUtilClass = FindObjectOfType(FMRSType);
+                bool enabled = (bool)GetMemberInfoValue(FMRSSettingEnabled, FMRSUtilClass);
                 if (enabled)
-                {
-                    enabled = (bool)GetMemberInfoValue(FMRSType.GetMember("_SETTING_Armed")[0], FMRSUtilClass);
-                }
+                    enabled = (bool)GetMemberInfoValue(FMRSSettingArmed, FMRSUtilClass);
 
                 //if we are checking the parachute setting is set
                 if (enabled && parachuteSetting)
                 {
-                    enabled = (bool)GetMemberInfoValue(FMRSType.GetMember("_SETTING_Parachutes")[0], null); //this setting is a static
+                    enabled = (bool)GetMemberInfoValue(FMRSSettingParachutes, null); // this setting is a static
                     if (enabled)
                     {
-                        enabled = !(bool)GetMemberInfoValue(FMRSType.GetMember("_SETTING_Defer_Parachutes_to_StageRecovery")[0], null); //this setting is a static
+                        enabled = !(bool)GetMemberInfoValue(FMRSSettingDeferParachutesToStageRecovery, null); // this setting is a static
                         //we "not" it because if they're deferring to us then it's the same as them being disabled (when not considering crew or probes)
                     }
                 }
