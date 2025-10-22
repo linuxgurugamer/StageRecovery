@@ -1,11 +1,11 @@
 {
   "NAME": "StageRecovery",
-  "URL": "http://ksp.spacetux.net/avc/StageRecovery",
+  "URL": "https://raw.githubusercontent.com/linuxgurugamer/StageRecovery/refs/heads/master/StageRecovery.version",
   "DOWNLOAD": "https://forum.kerbalspaceprogram.com/index.php?/topic/179306-151-stagerecovery",
   "VERSION": {
     "MAJOR": 1,
     "MINOR": 9,
-    "PATCH": 7,
+    "PATCH": 8,
     "BUILD": 0
   },
   "KSP_VERSION": {
@@ -21,6 +21,6 @@
   "KSP_VERSION_MAX": {
     "MAJOR": 1,
     "MINOR": 12,
-    "PATCH": 9
+    "PATCH": 99
   }
 }

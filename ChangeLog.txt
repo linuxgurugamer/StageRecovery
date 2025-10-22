@@ -1,5 +1,10 @@
 Changelog:
 
+1.9.8
+	Updated version file to use github for new version info
+	Thanks to github user @Phantomical for this:
+		Optimize FRMS_Enabled check
+
 1.9.7 
 	Thanks to github user @TuckMeIntoBread for this:
 		Optimize Reflection Usage in ProcessRealchute Method.  This pull request introduces optimizations to the ProcessRealchute method, significantly improving performance and all but eliminating VAB hiccup/lags related to StageRecovery + RealChute being used in combination.
