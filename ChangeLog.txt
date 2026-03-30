@@ -1,5 +1,9 @@
 Changelog:
 
+1.9.8.1
+	Thanks to github user @tsingshitao-nuke for this:
+		Added Chinese Localization
+		
 1.9.8
 	Updated version file to use github for new version info
 	Thanks to github user @Phantomical for this:
